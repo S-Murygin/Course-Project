@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header(title, scripts)">
+    <title th:replace="${title}">Общий заголовок</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+
+    <th:block th:replace="${scripts}" />
+</head>
+<body>
+    <footer th:fragment="common_footer" class="my-5 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2021 Сергей Мурыгин</p>
+        <a href="https://github.com/s-murygin/course-project">исходный код</a>
+    </footer>
+</body>
+</html>
