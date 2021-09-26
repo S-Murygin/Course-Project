@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/common :: common_header(~{::title}, ~{:://head/script})">
+	<title>Простой пример WebSocket</title>
+
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="pt-5 text-center">
+			<h2>Основы WebSocket</h2>
+			<p class="lead">Пример основ трансляции через WebSocket - без использования протоколов.</p>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+				<div class="row mb-3">
+					<div class="input-group">
+						WebSocket:&nbsp;
+						<div class="btn-group">
+							<button type="button" id="connect" class="btn btn-sm btn-outline-secondary" onclick="connect()">Подключиться</button>
+							<button type="button" id="disconnect" class="btn btn-sm btn-outline-secondary" onclick="disconnect()" disabled>Отключиться</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="input-group" id="sendmessage" style="display: none;">
+						<input type="text" id="message" class="form-control" placeholder="Сообщение">
+						<div class="input-group-append">
+							<button id="send" class="btn btn-primary icon-save" onclick="send()">
+								<i class="fas fa-paper-plane"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div id="content">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<footer th:replace="fragments/common :: common_footer"></footer>
+
+	<script>
+		let ws;
+
+		function setConnected(connected) {
+			$("#connect").prop("disabled", connected);
+			$("#disconnect").prop("disabled", !connected);
+			if (connected) {
+				$("#sendmessage").show();
+			} else {
+				$("#sendmessage").hide();
+			}
+		}
+
+		function connect() {
+			const url = 'ws://localhost:8080/web-socket';
+			ws = new WebSocket(url);
+			ws.onopen = function() {
+				showBroadcastMessage('<div class="alert alert-success">Подключились к серверу</div>');
+			};
+			ws.onmessage = function(data) {
+				showBroadcastMessage(createTextNode(data.data));
+			};
+			setConnected(true);
+		}
+
+		function disconnect() {
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.close();
+				showBroadcastMessage('<div class="alert alert-warning">Отключились от сервера</div>');	
+			}
+			setConnected(false);
+		}
+
+		function send() {
+			ws.send($("#message").val());
+			$("#message").val("");
+		}
+
+		function createTextNode(message) {
+			return '<div class="alert alert-info">' + message + '</div>';
+		}
+
+		function showBroadcastMessage(message) {
+			$("#content").html($("#content").html() + message);
+		}
+	</script>
+</body>
+</html>
