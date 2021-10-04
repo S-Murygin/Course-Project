@@ -20,9 +20,9 @@ function connect() {
 		return;
 	}
 
-	const url = 'ws://localhost:8080/broadcast';
+	const socket = new SockJS('/broadcast');
 
-	stompClient = Stomp.client(url);
+	stompClient = Stomp.over(socket);
 	stompClient.connect({}, function() {
 		stompClient.subscribe('/topic/broadcast', function(output) {
 			showBroadcastMessage(createTextNode(JSON.parse(output.body)));
