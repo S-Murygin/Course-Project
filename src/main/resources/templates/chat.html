@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/common :: common_header(~{::title}, ~{:://head/script})">
-	<title>Простой пример WebSocket</title>
+	<title>Пример WebSocket с STOMP</title>
 
 	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/stomp-websocket/stomp.js}"></script>
 	<script defer th:src="@{/js/app.js}"></script>
 </head>
 <body>
 	<div class="container">
 		<div class="pt-5 text-center">
-			<h2>Основы WebSocket</h2>
-			<p class="lead">Пример основ трансляции через WebSocket - без использования протоколов.</p>
+			<h2>WebSocket</h2>
+			<p class="lead">Трансляция через WebSocket с STOMP.</p>
 		</div>
 
 		<div class="row">
 			<div class="col-md-6">
-				<div class="row mb-3">
+				<div class="mb-3">
 					<div class="input-group">
-						WebSocket:&nbsp;
+						<input type="text" id="from" class="form-control" placeholder="Выберите псевдоним">
 						<div class="btn-group">
 							<button type="button" id="connect" class="btn btn-sm btn-outline-secondary" onclick="connect()">Подключиться</button>
 							<button type="button" id="disconnect" class="btn btn-sm btn-outline-secondary" onclick="disconnect()" disabled>Отключиться</button>
@@ -25,11 +26,11 @@
 					</div>
 				</div>
 
-				<div class="row mb-3">
+				<div class="mb-3">
 					<div class="input-group" id="sendmessage" style="display: none;">
 						<input type="text" id="message" class="form-control" placeholder="Сообщение">
 						<div class="input-group-append">
-							<button id="send" class="btn btn-primary icon-save" onclick="send()">
+							<button id="send" class="btn btn-primary" onclick="send()">
 								<i class="fas fa-paper-plane"></i>
 							</button>
 						</div>
@@ -38,7 +39,11 @@
 			</div>
 
 			<div class="col-md-6">
-				<div id="content">
+				<div id="content"></div>
+				<div>
+					<span class="float-end">
+						<button id="clear" class="btn btn-primary" onclick="clearBroadcast()" style="display: none;">Очистить</button>
+					</span>
 				</div>
 			</div>
 		</div>

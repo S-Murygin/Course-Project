@@ -16,7 +16,7 @@ public class WebSocketController {
 
     @MessageMapping("/broadcast")
     @SendTo("/topic/broadcast")
-    public ChatMessage send(ChatMessage chatMessage) {
+    public ChatMessage send(ChatMessage chatMessage) throws Exception {
         return new ChatMessage(chatMessage.getFrom(), chatMessage.getText(), "ALL");
     }
 }
