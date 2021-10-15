@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/common :: common_header(~{::title}, ~{:://head/script})">
-	<title>Пример WebSocket с STOMP и SockJS</title>
+	<title>Простой чат</title>
 
 	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 	<script th:src="@{/webjars/sockjs-client/sockjs.js}"></script>
@@ -9,12 +9,13 @@
 	<script defer th:src="@{/js/app.js}"></script>
 </head>
 <body>
-	<div class="container">
-		<div class="pt-5 text-center">
-			<h2>WebSocket</h2>
-			<p class="lead">Трансляция через WebSocket с STOMP и SockJS.</p>
-		</div>
+	<nav class="navbar navbar-dark p-3">
+		<a class="navbar-brand" href="/chat">
+			<h1>Простой чат</h1>
+		</a>
+	</nav>
 
+	<main class="container pt-5">
 		<div class="row">
 			<div class="col-md-6">
 				<div class="mb-3">
@@ -25,6 +26,16 @@
 							<button type="button" id="disconnect" class="btn btn-sm btn-outline-secondary" onclick="disconnect()" disabled>Отключиться</button>
 						</div>
 					</div>
+				</div>
+
+				<div class="mb-3" id="users" style="display: none;">
+					<span id="active-users-span"></span>
+					<ul id="active-users" class="list-group list-group-horizontal-sm">
+					</ul>
+				</div>
+
+				<div class="mb-3" id="divSelectedUser" style="display: none;">
+					Выбран <span id="selectedUser" class="badge bg-secondary"></span>
 				</div>
 
 				<div class="mb-3">
@@ -43,12 +54,13 @@
 				<div id="content"></div>
 				<div>
 					<span class="float-end">
-						<button id="clear" class="btn btn-primary" onclick="clearBroadcast()" style="display: none;">Очистить</button>
+						<button id="clear" class="btn btn-primary" onclick="clearMessages()" style="display: none;">Очистить</button>
 					</span>
 				</div>
+				<div id="response"></div>
 			</div>
 		</div>
-	</div>
+	</main>
 
 	<footer th:replace="fragments/common :: common_footer"></footer>
 </body>
