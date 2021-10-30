@@ -17,6 +17,10 @@
     border-top-width: 1px !important;
 }
 
+body {
+    background-color: #EEE;
+}
+
 a {
     text-decoration: none;
 }
