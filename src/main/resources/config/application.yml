@@ -8,7 +8,6 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
-    platform: h2
     schema: classpath:/db/schema-h2.sql
     data: classpath:/db/data-h2.sql
   jpa:
