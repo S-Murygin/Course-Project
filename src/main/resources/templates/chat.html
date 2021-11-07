@@ -4,6 +4,7 @@
 	<title>Простой чат</title>
 
 	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 	<script th:src="@{/webjars/sockjs-client/sockjs.js}"></script>
 	<script th:src="@{/webjars/stomp-websocket/stomp.js}"></script>
 	<script defer th:src="@{/js/app.js}"></script>
@@ -13,22 +14,22 @@
 		<a class="navbar-brand" href="/chat-ui">
 			<h1>Простой чат</h1>
 		</a>
+		<div class="dropdown">
+			<button id="dropdownMenuButton" class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+				Привет, <span id="from" th:text="${#authentication.name}"></span>
+			</button>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+				<li>
+					<a class="dropdown-item" href="javascript:void(0)" onclick="disconnect()"><i class="fas fa-sign-out-alt"></i> Выйти</a>
+				</li>
+			</ul>
+		</div>
 	</nav>
 
 	<main class="container pt-5">
 		<div class="row">
 			<div class="col-md-6">
-				<div class="mb-3">
-					<div class="input-group">
-						<input type="text" id="from" class="form-control" placeholder="Выберите псевдоним">
-						<div class="btn-group">
-							<button type="button" id="connect" class="btn btn-sm btn-outline-secondary" onclick="connect()">Подключиться</button>
-							<button type="button" id="disconnect" class="btn btn-sm btn-outline-secondary" onclick="disconnect()" disabled>Отключиться</button>
-						</div>
-					</div>
-				</div>
-
-				<div class="mb-3" id="users" style="display: none;">
+				<div class="mb-3" id="users">
 					<span id="active-users-span"></span>
 					<ul id="active-users" class="list-group list-group-horizontal-sm">
 					</ul>
@@ -39,7 +40,7 @@
 				</div>
 
 				<div class="mb-3">
-					<div class="input-group" id="sendmessage" style="display: none;">
+					<div class="input-group" id="sendmessage">
 						<input type="text" id="message" class="form-control" placeholder="Сообщение">
 						<div class="input-group-append">
 							<button id="send" class="btn btn-primary" onclick="send()">
