@@ -1,82 +1,73 @@
 let stompClient = null;
 let selectedUser = null;
-let userName = $("#from").val();
+const userName = $("#from").text();
+const token = $('meta[name="_csrf"]').attr('content');
 
-function setConnected(connected) {
-	$("#from").prop("disabled", connected);
-	$("#connect").prop("disabled", connected);
-	$("#disconnect").prop("disabled", !connected);
-
-	if (connected) {
-		$("#users").show();
-		$("#sendmessage").show();
-	} else {
-		$("#users").hide();
-		$("#sendmessage").hide();
-
-		setSelectedUser("");
-	}
-}
-
-function connect() {
-	userName = $("#from").val();
-
-	if (userName == null || userName === "") {
-		alert('Пожалуйста введите псевдоним!');
-		return;
-	}
-
-	$.post('/rest/user-connect', {username: userName},
-        function() {
+$(function connect() {
+	const request = $.post(
+	    '/rest/user-connect',
+	    { '_csrf': token, username: userName },
+	    function() {
 			const socket = new SockJS('/chatSocket');
 
 			stompClient = Stomp.over(socket);
-			stompClient.connect({username: userName}, function() {
-			    console.log('connected...');
+			stompClient.connect(
+			    { username: userName },
+			    function() {
+			        console.log('connected...');
 
-				stompClient.subscribe('/topic/broadcast', function(output) {
-					showMessage(createTextNode(JSON.parse(output.body)));
-				});
+				    stompClient.subscribe('/topic/broadcast', function(output) {
+					    showMessage(createTextNode(JSON.parse(output.body)));
+				    });
 
-				stompClient.subscribe('/topic/active', function(output) {
-                    updateActiveUsers(userName, JSON.parse(output.body))
-				});
+				    stompClient.subscribe('/topic/active', function(output) {
+                        updateActiveUsers(userName, JSON.parse(output.body))
+				    });
 
-				stompClient.subscribe('/user/queue/messages', function(output) {
-					showMessage(createTextNode(JSON.parse(output.body)));
-				});
+				    stompClient.subscribe('/user/queue/messages', function(output) {
+					    showMessage(createTextNode(JSON.parse(output.body)));
+				    });
 
-				sendConnection(' подключился к серверу');
-				updateUsers(userName);
-				setConnected(true);
-
-			}, function(err) {
-				alert('Error ' + err);
+				    sendConnection(' подключился к серверу');
+				    updateUsers(userName);
+                },
+			    function(err) {
+				    alert('Error ' + err);
 			});
+    });
 
-	}).done(function() {
+	request.done(function() {
 //		alert('Request done!');
+	});
 
-	}).fail(function(jqxhr, settings, ex) {
+	request.fail(function(jqXHR, settings, ex) {
 		console.log('Failed, ' + ex);
 	});
-}
+});
 
 function disconnect() {
 	if (stompClient != null) {
-		$.post('/rest/user-disconnect', {username: userName},
+		const request = $.post(
+		    '/rest/user-disconnect',
+		    { '_csrf': token, username: userName },
 			function() {
 				sendConnection(' отключился от сервера');
 
 				stompClient.disconnect(function() {
 					console.log('disconnected...');
-					setConnected(false);
 				});
+		});
 
-		}).done(function() {
-//			alert('Request done!');
+		request.done(function() {
+	        $.post(
+	            '/logout',
+	            { '_csrf': token },
+	            function() {
+	                window.location.href = '/login?logout';
+	        });
+		});
 
-		}).fail(function(jqxhr, settings, ex) {
+		request.fail(function(jqXHR, settings, ex) {
 			console.log('Failed, ' + ex);
 		});
 	}
@@ -84,7 +75,7 @@ function disconnect() {
 
 function sendConnection(message) {
 	const text = userName + message;
-	sendBroadcast({'from': 'server', 'text': text});
+	sendBroadcast({ 'from': 'server', 'text': text });
 }
 
 function sendBroadcast(json) {
@@ -99,8 +90,8 @@ function send() {
 		return;
 	}
 
-	stompClient.send("/chatApp/chat", {'sender': userName},
-		JSON.stringify({'from': userName, 'text': text, 'recipient': selectedUser}));
+	stompClient.send("/chatApp/chat", { 'sender': userName },
+		JSON.stringify({ 'from': userName, 'text': text, 'recipient': selectedUser }));
 	$("#message").val("");
 }
 
@@ -145,13 +136,7 @@ function clearMessages() {
 function setSelectedUser(username) {
 	selectedUser = username;
 	$("#selectedUser").html(selectedUser);
-
-	if (selectedUser === "") {
-	    $("#divSelectedUser").hide();
-	}
-	else {
-	    $("#divSelectedUser").show();
-	}
+	$("#divSelectedUser").show();
 }
 
 function updateActiveUsers(username, userList) {
@@ -182,9 +167,9 @@ function updateUsers(userName) {
 	const url = "/rest/active-users-except/" + userName;
 
 	$.ajax({
-		type: 'GET',
+		method: 'GET',
 		url: url,
-		dataType: 'json',
+		dataType: 'JSON',
 		success: function(userList) {
 			if (userList.length === 0) {
 				activeUserSpan.html('<p><i>Активные пользователи не найдены.</i></p>')
